@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wedding Check-In</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+<h2>Wedding Guest Check-In</h2>
+
+<div id="reader" style="width:350px"></div>
+<div id="result"></div>
+
+<script>
+const API_URL = "YOUR_APPS_SCRIPT_WEBAPP_URL";
+
+function checkIn(code){
+ fetch(API_URL,{
+   method:"POST",
+   body:JSON.stringify({
+      action:"checkin",
+      trackingCode:code
+   })
+ })
+ .then(r=>r.json())
+ .then(data=>{
+   document.getElementById("result").innerHTML =
+      JSON.stringify(data,null,2);
+ });
+}
+
+const qr = new Html5Qrcode("reader");
+
+qr.start(
+ { facingMode:"environment" },
+ { fps:10, qrbox:250 },
+ msg => {
+    checkIn(msg);
+    qr.stop();
+ },
+ err => {}
+);
+</script>
+</body>
+</html>
